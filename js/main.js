@@ -26,6 +26,9 @@ const tag = t => {
   }
 }
 
+const tableCell = tag('tr')
+const tableCells = items => items.map(tableCell).join('')
+
 
 const DESCRIPTION = document.getElementById('description')
 const CALORIES = document.getElementById('calories')
