@@ -32,6 +32,12 @@ const tableRow = items => compose(tableRowTag, tableCells)(items)
 const tableCell = tag('td')
 const tableCells = items => items.map(tableCell).join('')
 
+// <button class="btn btn-outline-danger" onclick="removeItem(index)">
+//   <i class="fas fa-trash-alt"></i>
+// </button>
+
+const trashIcon = tag({ tag: 'i', attrs: { class: 'fas fa-trash-alt' } })('')
+
 
 const DESCRIPTION = document.getElementById('description')
 const CALORIES = document.getElementById('calories')
@@ -111,7 +117,23 @@ const renderItems = () => {
 
   tableBody.innerHTML = ''
 
-  list.map(item => {
-    tableBody.innerHTML += tableRow([item.description, item.calories, item.carbs, item.protein])
+  list.map((item, index) => {
+
+    const removeButton = tag({
+      tag: 'button',
+      attrs: {
+        class: 'btn btn-outline-danger',
+        onclick: `removeItem(${index})`
+      }
+    })(trashIcon)
+
+    tableBody.innerHTML += tableRow([item.description, item.calories, item.carbs, item.protein, removeButton])
   })
+}
+
+const removeItem = (index) => {
+  list.splice(index, 1)
+
+  updateTotals()
+  renderItems()
 }
