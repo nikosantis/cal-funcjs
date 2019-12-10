@@ -20,13 +20,16 @@ const tagAttrs = obj => (content = '') =>
 
 const tag = t => {
   if (typeof t === 'string') {
-    tagAttrs({tag: t})
+    return tagAttrs({tag: t})
   } else {
-    tagAttrs(t)
+    return tagAttrs(t)
   }
 }
 
-const tableCell = tag('tr')
+const tableRowTag = tag('tr')
+const tableRow = items => compose(tableRowTag, tableCells)(items)
+
+const tableCell = tag('td')
 const tableCells = items => items.map(tableCell).join('')
 
 
@@ -48,6 +51,7 @@ keyInputs(CALORIES)
 keyInputs(CARBS)
 keyInputs(PROTEIN)
 
+// function to validate if the inputs have content, otherwise, a class is added 'is-invalid'
 const validateInputs = () => {
 
   DESCRIPTION.value ? '' : DESCRIPTION.classList.add('is-invalid')
@@ -56,13 +60,15 @@ const validateInputs = () => {
   PROTEIN.value ? '' : PROTEIN.classList.add('is-invalid')
 
   if (
-    DESCRIPTION.value
-    && CALORIES.value
-    && CARBS.value
-    && PROTEIN.value
+    DESCRIPTION.value &&
+    CALORIES.value &&
+    CARBS.value &&
+    PROTEIN.value
   ) add()
 }
 
+
+// function that adds the values ​​of the inputs in an array
 const add = () => {
   const newItem = {
     description: DESCRIPTION.value,
@@ -73,12 +79,39 @@ const add = () => {
 
   list.push(newItem)
   cleanInputs()
-  console.log(list)
+  updateTotals()
+  renderItems()
 }
 
+// update the totals
+const updateTotals = () => {
+  let calories = 0, carbs = 0, protein = 0
+
+  list.map(item => {
+    calories += item.calories,
+    carbs += item.carbs,
+    protein += item.protein
+  })
+
+  document.getElementById('totalCalories').textContent = calories
+  document.getElementById('totalCarbs').textContent = carbs
+  document.getElementById('totalProtein').textContent = protein
+}
+
+// function that cleans the value of the inputs
 const cleanInputs = () => {
   DESCRIPTION.value = ''
   CALORIES.value = ''
   CARBS.value = ''
   PROTEIN.value = ''
+}
+
+const renderItems = () => {
+  const tableBody = document.querySelector('tbody')
+
+  tableBody.innerHTML = ''
+
+  list.map(item => {
+    tableBody.innerHTML += tableRow([item.description, item.calories, item.carbs, item.protein])
+  })
 }
